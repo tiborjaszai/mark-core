@@ -1,1 +1,8 @@
 services:
+
+    JTG\Mark\Twig\TwigEnv:
+        class: JTG\Mark\Twig\TwigEnv
+        arguments:
+            $templateDirs:
+                - '%mark.kernel.root_dir%/dist/templates'
+                - '%mark.project.root_dir%/dist/templates'

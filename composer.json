@@ -26,6 +26,10 @@
         "php": "^8.1",
         "symfony/dependency-injection": "^6.1",
         "symfony/yaml": "^6.1",
-        "symfony/config": "^6.1"
+        "symfony/config": "^6.1",
+        "twig/twig": "^3.4"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-latest"
     }
 }
