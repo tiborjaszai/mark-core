@@ -8,6 +8,17 @@ services:
         arguments:
             $provider: '@JTG\Mark\Markdown\EnvironmentProvider'
 
+    JTG\Mark\Render\HtmlRenderer:
+        class: JTG\Mark\Render\HtmlRenderer
+        arguments:
+            $twigEnv: '@JTG\Mark\Twig\TwigEnv'
+            $outputDir: '%mark.project.root_dir%/build'
+
+    JTG\Mark\Repository\PostRepository:
+        class: JTG\Mark\Repository\PostRepository
+        arguments:
+            $directory: '%mark.project.root_dir%/dist/posts'
+
     JTG\Mark\Twig\TwigEnv:
         class: JTG\Mark\Twig\TwigEnv
         arguments:

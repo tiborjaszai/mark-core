@@ -25,4 +25,21 @@ class MarkdownConverter extends BaseMarkdownConverter
 
         return null;
     }
+
+    /**
+     * @param array<SplFileInfo> $fileInfos
+     * @return array<RenderedContentWithFrontMatter>
+     */
+    public function parseFiles(array $fileInfos): array
+    {
+        $files = [];
+
+        foreach ($fileInfos as $fileInfo) {
+            if ($renderedContent = $this->parseFile(fileInfo: $fileInfo)) {
+                $files[$fileInfo->getFilenameWithoutExtension()] = $renderedContent;
+            }
+        }
+
+        return $files;
+    }
 }
