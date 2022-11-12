@@ -1,5 +1,13 @@
 services:
 
+    JTG\Mark\Markdown\EnvironmentProvider:
+        class: JTG\Mark\Markdown\EnvironmentProvider
+
+    JTG\Mark\Markdown\MarkdownConverter:
+        class: JTG\Mark\Markdown\MarkdownConverter
+        arguments:
+            $provider: '@JTG\Mark\Markdown\EnvironmentProvider'
+
     JTG\Mark\Twig\TwigEnv:
         class: JTG\Mark\Twig\TwigEnv
         arguments:
