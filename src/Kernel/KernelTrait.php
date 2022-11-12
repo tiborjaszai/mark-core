@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace JTG\Mark\Kernel;
 
+use Exception;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 trait KernelTrait
 {
+    /**
+     * @throws Exception
+     */
     public function getContainer(): ContainerBuilder
     {
         if (false === $this->booted) {
@@ -30,7 +34,7 @@ trait KernelTrait
     public function getKernelRootDir(): string
     {
         if (null === $this->kernelRootDir) {
-            $this->kernelRootDir = dirname(path: __DIR__);
+            $this->kernelRootDir = dirname(path: __DIR__, levels: 2);
         }
 
         return $this->kernelRootDir;

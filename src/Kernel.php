@@ -27,11 +27,17 @@ final class Kernel
         $this->environment = $environment;
     }
 
+    /**
+     * @throws Exception
+     */
     public function run(): void
     {
         $this->boot();
     }
 
+    /**
+     * @throws Exception
+     */
     protected function boot(): void
     {
         if (null === $this->container) {
@@ -53,7 +59,7 @@ final class Kernel
     protected function registerParameters(): Kernel
     {
         $this
-            ->getContainer()
+            ->container
             ->getParameterBag()
             ->add([
                 'mark.kernel.root_dir' => $this->getKernelRootDir(),
@@ -71,7 +77,7 @@ final class Kernel
     {
         $locator = new FileLocator(paths: $this->getKernelRootDir() . '/config');
 
-        $loader = new YamlFileLoader(container: $this->getContainer(), locator: $locator);
+        $loader = new YamlFileLoader(container: $this->container, locator: $locator);
         $loader->load(resource: 'services.yaml');
 
         return $this;
