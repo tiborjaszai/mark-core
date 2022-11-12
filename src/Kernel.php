@@ -6,13 +6,10 @@ namespace JTG\Mark;
 
 use Exception;
 use JTG\Mark\Kernel\KernelTrait;
-use JTG\Mark\Markdown\MarkdownConverter;
-use JTG\Mark\Render\HtmlRenderer;
-use JTG\Mark\Repository\PostRepository;
+use JTG\Mark\Service\MarkManager;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\Finder\SplFileInfo;
 
 final class Kernel
 {
@@ -37,18 +34,10 @@ final class Kernel
     public function run(): void
     {
         $this->boot();
-        $this->renderHtmlPages();
-    }
 
-    protected function renderHtmlPages(): void
-    {
-        $container = $this->getContainer();
-
-        /** @var array<SplFileInfo> $postFiles */
-        $markdownPostFiles = $container->get(PostRepository::class)?->findAll();
-        $renderedContents = $container->get(MarkdownConverter::class)?->parseFiles($markdownPostFiles);
-
-        $container->get(HtmlRenderer::class)?->render($renderedContents);
+        /** @var MarkManager $markManager */
+        $markManager = $this->getContainer()->get(MarkManager::class);
+        $markManager->doProcess();
     }
 
     /**

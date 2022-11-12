@@ -19,6 +19,13 @@ services:
         arguments:
             $directory: '%mark.project.root_dir%/dist/posts'
 
+    JTG\Mark\Service\MarkManager:
+        class: JTG\Mark\Service\MarkManager
+        arguments:
+            $postRepository: '@JTG\Mark\Repository\PostRepository'
+            $markdownConverter: '@JTG\Mark\Markdown\MarkdownConverter'
+            $htmlRenderer: '@JTG\Mark\Render\HtmlRenderer'
+
     JTG\Mark\Twig\TwigEnv:
         class: JTG\Mark\Twig\TwigEnv
         arguments:
