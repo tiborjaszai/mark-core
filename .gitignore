@@ -1,0 +1,8 @@
+# IDE
+.idea
+.vscode
+
+# Vendor, log and cache files
+/var
+/vendor
+composer.lock

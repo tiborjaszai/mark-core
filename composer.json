@@ -1,0 +1,29 @@
+{
+    "name": "tiborjaszai/mark-core",
+    "description": "Mark is a simple static site generator based on symfony components.",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tibor Jaszai",
+            "email": "tiborjaszaidev@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "JTG\\Mark\\": "src/"
+        },
+        "classmap": ["src"]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "JTG\\Mark\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^8.1"
+    },
+    "require-dev": {}
+}
