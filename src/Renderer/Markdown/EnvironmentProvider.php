@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JTG\Mark\Markdown;
+namespace JTG\Mark\Renderer\Markdown;
 
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;

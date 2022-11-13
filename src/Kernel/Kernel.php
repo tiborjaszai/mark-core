@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-namespace JTG\Mark;
+namespace JTG\Mark\Kernel;
 
 use Exception;
-use JTG\Mark\Kernel\KernelTrait;
-use JTG\Mark\Service\MarkManager;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -16,34 +14,16 @@ final class Kernel
     use KernelTrait;
 
     private ?ContainerBuilder $container = null;
-    private string $environment;
     private bool $booted = false;
 
     private ?string $kernelRootDir = null;
-    private string $projectDir;
 
-    public function __construct(string $projectDir, string $environment = 'dev')
+    public function __construct(private readonly string $projectDir,
+                                private readonly string $environment = 'dev')
     {
-        $this->projectDir = $projectDir;
-        $this->environment = $environment;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function run(): void
-    {
-        $this->boot();
-
-        /** @var MarkManager $markManager */
-        $markManager = $this->getContainer()->get(MarkManager::class);
-        $markManager->doProcess();
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected function boot(): void
+    public function boot(): void
     {
         if (null === $this->container) {
             $this->initializeContainer();
@@ -52,6 +32,8 @@ final class Kernel
         $this
             ->registerParameters()
             ->registerServices();
+
+        $this->container->compile();
 
         $this->booted = true;
     }
@@ -66,13 +48,27 @@ final class Kernel
         $this
             ->container
             ->getParameterBag()
-            ->add([
-                'mark.kernel.root_dir' => $this->getKernelRootDir(),
-                'mark.project.root_dir' => $this->getProjectDir(),
-                'mark.project.environment' => $this->getEnvironment()
-            ]);
+            ->add(array_merge(
+                $this->getKernelParameters(),
+                $this->getProjectParameters()
+            ));
 
         return $this;
+    }
+
+    protected function getKernelParameters(): array
+    {
+        return [
+            'kernel.root_dir' => $this->getKernelRootDir()
+        ];
+    }
+
+    protected function getProjectParameters(): array
+    {
+        return [
+            'project.root_dir' => $this->getProjectDir(),
+            'project.environment' => $this->getEnvironment()
+        ];
     }
 
     /**

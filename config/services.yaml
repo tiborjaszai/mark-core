@@ -1,34 +1,33 @@
+parameters:
+
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        bind:
+            $kernelTemplateDir: '%kernel.root_dir%/dist/templates'
+            $projectTemplateDir: '%project.root_dir%/dist/templates'
+            $projectPostDir: '%project.root_dir%/dist/posts'
+            $projectOutputDir: '%project.root_dir%/build'
 
-    JTG\Mark\Markdown\EnvironmentProvider:
-        class: JTG\Mark\Markdown\EnvironmentProvider
+    JTG\Mark\:
+        resource: '../src/'
+        exclude:
+            - '../src/Kernel/'
+            - '../src/Model/'
 
-    JTG\Mark\Markdown\MarkdownConverter:
-        class: JTG\Mark\Markdown\MarkdownConverter
+    _instanceof:
+        Symfony\Component\Console\Command\Command:
+            tags: [ 'command' ]
+
+    JTG\Mark\MarkApplication:
+        public: true
         arguments:
-            $provider: '@JTG\Mark\Markdown\EnvironmentProvider'
+            - !tagged command
 
-    JTG\Mark\Render\HtmlRenderer:
-        class: JTG\Mark\Render\HtmlRenderer
+    Symfony\Component\DependencyInjection\ParameterBag\ContainerBag:
+        public: true
         arguments:
-            $twigEnv: '@JTG\Mark\Twig\TwigEnv'
-            $outputDir: '%mark.project.root_dir%/build'
+            $container: '@service_container'
 
-    JTG\Mark\Repository\PostRepository:
-        class: JTG\Mark\Repository\PostRepository
-        arguments:
-            $directory: '%mark.project.root_dir%/dist/posts'
-
-    JTG\Mark\Service\MarkManager:
-        class: JTG\Mark\Service\MarkManager
-        arguments:
-            $postRepository: '@JTG\Mark\Repository\PostRepository'
-            $markdownConverter: '@JTG\Mark\Markdown\MarkdownConverter'
-            $htmlRenderer: '@JTG\Mark\Render\HtmlRenderer'
-
-    JTG\Mark\Twig\TwigEnv:
-        class: JTG\Mark\Twig\TwigEnv
-        arguments:
-            $templateDirs:
-                - '%mark.kernel.root_dir%/dist/templates'
-                - '%mark.project.root_dir%/dist/templates'
+    Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface: '@Symfony\Component\DependencyInjection\ParameterBag\ContainerBag'
