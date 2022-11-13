@@ -1,6 +1,6 @@
 # Mark core
 
-Mark is written in PHP. It is a simple static site generator based on symfony components.
+Core package for the "Mark" project. Mark is a simple static site generator.
 
 ## Prerequisites
 
