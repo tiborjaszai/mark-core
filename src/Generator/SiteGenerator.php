@@ -27,8 +27,9 @@ class SiteGenerator implements GeneratorInterface
         foreach ($context->collections as $collection) {
             $collectionDir = $context->collectionsDir . '/' . $collection->slug;
 
-            $this->fileRepository->setDirectory(directory: $collectionDir);
-            $markdownFiles = $this->fileRepository->findAll();
+            $markdownFiles = $this->fileRepository
+                ->setDirectory(directory: $collectionDir)
+                ->findAll();
 
             $markdownModels = $this->markdownRenderer->renderFiles(fileInfos: $markdownFiles);
 

@@ -25,9 +25,11 @@ class FileRepository
 
     # region getter methods
 
-    public function setDirectory(string $directory): void
+    public function setDirectory(string $directory): FileRepository
     {
         $this->directory = $directory;
+
+        return $this;
     }
 
     /**
