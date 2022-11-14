@@ -11,6 +11,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 final class Kernel
 {
+    use ContextTrait;
     use KernelTrait;
 
     private ?ContainerBuilder $container = null;
@@ -31,7 +32,8 @@ final class Kernel
 
         $this
             ->registerParameters()
-            ->registerServices();
+            ->registerServices()
+            ->configureServices();
 
         $this->container->compile();
 
@@ -66,8 +68,7 @@ final class Kernel
     protected function getProjectParameters(): array
     {
         return [
-            'project.root_dir' => $this->getProjectDir(),
-            'project.environment' => $this->getEnvironment()
+            'project.root_dir' => $this->getProjectDir()
         ];
     }
 
@@ -82,5 +83,10 @@ final class Kernel
         $loader->load(resource: 'services.yaml');
 
         return $this;
+    }
+
+    private function configureServices(): void
+    {
+        $this->configureContextProvider();
     }
 }

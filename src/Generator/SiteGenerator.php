@@ -4,26 +4,37 @@ declare(strict_types=1);
 
 namespace JTG\Mark\Generator;
 
+use JTG\Mark\Context\ContextProvider;
+use JTG\Mark\Model\Site\Collection;
 use JTG\Mark\Renderer\HTML\HTMLRenderer;
 use JTG\Mark\Renderer\Markdown\MarkdownRenderer;
-use JTG\Mark\Repository\PostRepository;
+use JTG\Mark\Repository\FileRepository;
 
 class SiteGenerator implements GeneratorInterface
 {
-    public function __construct(private readonly PostRepository   $postRepository,
-                                private readonly MarkdownRenderer $markdownRenderer,
+    public function __construct(private readonly MarkdownRenderer $markdownRenderer,
                                 private readonly HTMLRenderer     $HTMLRenderer,
-                                private readonly string           $projectPostDir)
+                                private readonly FileRepository   $fileRepository,
+                                private readonly ContextProvider  $contextProvider)
     {
     }
 
     public function generate(): bool
     {
-        $markdownPostFiles = $this->postRepository->findAll();
-        $markdownModels = $this->markdownRenderer->renderFiles(fileInfos: $markdownPostFiles);
+        $context = $this->contextProvider->context;
 
-        foreach ($markdownModels as $markdownModel) {
-            $this->HTMLRenderer->render(MDFile: $markdownModel, dir: $this->projectPostDir);
+        /** @var Collection $collection */
+        foreach ($context->collections as $collection) {
+            $collectionDir = $context->collectionsDir . '/' . $collection->slug;
+
+            $this->fileRepository->setDirectory(directory: $collectionDir);
+            $markdownFiles = $this->fileRepository->findAll();
+
+            $markdownModels = $this->markdownRenderer->renderFiles(fileInfos: $markdownFiles);
+
+            foreach ($markdownModels as $markdownModel) {
+                $this->HTMLRenderer->render(MDFile: $markdownModel, collection: $collection, dir: $collectionDir);
+            }
         }
 
         return true;

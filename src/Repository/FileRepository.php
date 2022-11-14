@@ -8,7 +8,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
-abstract class FileRepository
+class FileRepository
 {
     private const ALLOWED_PATTERNS = [
         '*.md',
@@ -18,13 +18,17 @@ abstract class FileRepository
     private string $directory;
     private Filesystem $filesystem;
 
-    public function __construct(string $directory)
+    public function __construct()
     {
-        $this->directory = $directory;
         $this->filesystem = new Filesystem();
     }
 
     # region getter methods
+
+    public function setDirectory(string $directory): void
+    {
+        $this->directory = $directory;
+    }
 
     /**
      * @return array<SplFileInfo>

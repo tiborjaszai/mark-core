@@ -4,15 +4,11 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
-        bind:
-            $kernelTemplateDir: '%kernel.root_dir%/dist/templates'
-            $projectTemplateDir: '%project.root_dir%/dist/templates'
-            $projectPostDir: '%project.root_dir%/dist/posts'
-            $projectOutputDir: '%project.root_dir%/build'
 
     JTG\Mark\:
         resource: '../src/'
         exclude:
+            - '../src/Context/Context.php'
             - '../src/Kernel/'
             - '../src/Model/'
 

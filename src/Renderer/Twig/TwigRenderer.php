@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JTG\Mark\Renderer\Twig;
 
+use JTG\Mark\Context\ContextProvider;
 use Symfony\Component\Filesystem\Filesystem;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -12,9 +13,11 @@ class TwigRenderer
 {
     private Environment $env;
 
-    public function __construct(string $kernelTemplateDir, string $projectTemplateDir)
+    public function __construct(ContextProvider $contextProvider)
     {
-        $dirs = $this->checkTemplateDirs(kernelTemplateDir: $kernelTemplateDir, projectTemplateDir: $projectTemplateDir);
+        $context = $contextProvider->context;
+
+        $dirs = $this->checkTemplateDirs(kernelTemplateDir: $context->kernelRootDir . '/dist/templates', projectTemplateDir: $context->templatesDir);
         $this->initTwigEnv($dirs);
     }
 
