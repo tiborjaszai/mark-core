@@ -28,6 +28,10 @@ class SiteGenerator implements GeneratorInterface
 
         /** @var Collection $collection */
         foreach ($context->collections as $collection) {
+            if (false === $collection->output) {
+                continue;
+            }
+
             $markdownFiles = $this->fileRepository
                 ->setDirectory(directory: $context->getCollectionsDir() . '/' . $collection->slug)
                 ->findAll();
