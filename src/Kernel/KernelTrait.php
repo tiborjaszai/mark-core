@@ -21,11 +21,6 @@ trait KernelTrait
         return $this->container;
     }
 
-    public function getEnvironment(): string
-    {
-        return $this->environment;
-    }
-
     public function getProjectDir(): string
     {
         return $this->projectDir;

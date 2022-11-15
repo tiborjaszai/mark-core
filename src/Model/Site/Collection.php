@@ -8,7 +8,8 @@ class Collection
 {
     public function __construct(public readonly string $name,
                                 public readonly string $slug,
-                                public readonly string $template)
+                                public readonly string $template = 'default_template',
+                                public readonly bool   $output = true)
     {
     }
 }

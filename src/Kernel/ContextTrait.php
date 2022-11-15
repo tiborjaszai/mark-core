@@ -13,47 +13,35 @@ use Symfony\Component\Yaml\Yaml;
 
 trait ContextTrait
 {
-    public function getDefaultContextArray(): array
-    {
-        return [
-            'kernel_root_dir' => $this->getKernelRootDir(),
-            'project_root_dir' => $this->getProjectDir(),
-            'dist_dir' => $this->getProjectDir() . '/dist',
-            'collections_dir' => $this->getProjectDir() . '/dist/collections',
-            'data_dir' => $this->getProjectDir() . '/dist/data',
-            'includes_dir' => $this->getProjectDir() . '/dist/includes',
-            'templates_dir' => $this->getProjectDir() . '/dist/templates',
-            'output_dir' => $this->getProjectDir() . '/build'
-        ];
-    }
-
-    protected function getIgnoredConfigs(): array
-    {
-        return [
-            'kernel_root_dir',
-            'project_root_dir'
-        ];
-    }
-
     #[NoReturn] private function configureContextProvider(): void
     {
-        $serializer = SerializerBuilder::create()->build();
-        $contextArray = $this->getDefaultContextArray();
-
-        if ($config = $this->loadConfig()) {
-            $contextArray = array_merge($contextArray, $config);
-        }
-
-        $context = $serializer->deserialize(
-            data: json_encode($contextArray, JSON_THROW_ON_ERROR),
-            type: Context::class,
-            format: 'json'
-        );
+        $context = $this->buildContext();
 
         $definition = $this->container->getDefinition(ContextProvider::class);
         $definition = $definition->setArgument('$context', $context);
 
         $this->container->setDefinition(ContextProvider::class, $definition);
+    }
+
+    protected function buildContext(): Context
+    {
+        $serializer = SerializerBuilder::create()->build();
+
+        $contextArray = [
+            Context::CONFIG_KERNEL_ROOT_DIR_ALIAS => $this->getKernelRootDir(),
+            Context::CONFIG_VENDOR_TEMPLATES_ALIAS => $this->getKernelRootDir() . '/dist/templates',
+            Context::CONFIG_PROJECT_ROOT_DIR_ALIAS => $this->getProjectDir()
+        ];
+
+        if ($config = $this->loadConfig()) {
+            $contextArray = array_merge($contextArray, $config);
+        }
+
+        return $serializer->deserialize(
+            data: json_encode($contextArray, JSON_THROW_ON_ERROR),
+            type: Context::class,
+            format: 'json'
+        );
     }
 
     protected function loadConfig(): ?array
@@ -64,9 +52,9 @@ trait ContextTrait
             try {
                 $config = Yaml::parseFile($configFilePath);
 
-                foreach ($this->getIgnoredConfigs() as $ignoredConfig) {
-                    if (true === isset($config[$ignoredConfig])) {
-                        unset($config[$ignoredConfig]);
+                foreach (Context::IGNORED_LOCAL_CONFIGS as $ignoredLocalConfig) {
+                    if (true === isset($config[$ignoredLocalConfig])) {
+                        unset($config[$ignoredLocalConfig]);
                     }
                 }
 

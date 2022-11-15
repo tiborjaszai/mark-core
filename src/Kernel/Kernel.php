@@ -19,8 +19,7 @@ final class Kernel
 
     private ?string $kernelRootDir = null;
 
-    public function __construct(private readonly string $projectDir,
-                                private readonly string $environment = 'dev')
+    public function __construct(private readonly string $projectDir)
     {
     }
 

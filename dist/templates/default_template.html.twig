@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="{{ lang ?? 'en' }}">
+<html lang="{{ context.language }}">
     <head>
         <meta charset="UTF-8">
         {% block meta %}{% endblock %}
 
-        <title>{{ title ?? '' }}</title>
+        <title>{{ node.title ?? context.title }}</title>
 
         {% block stylesheets %}{% endblock %}
     </head>

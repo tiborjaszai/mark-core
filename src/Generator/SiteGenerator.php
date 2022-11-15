@@ -9,6 +9,7 @@ use JTG\Mark\Model\Site\Collection;
 use JTG\Mark\Renderer\HTML\HTMLRenderer;
 use JTG\Mark\Renderer\Markdown\MarkdownRenderer;
 use JTG\Mark\Repository\FileRepository;
+use Symfony\Component\Filesystem\Filesystem;
 
 class SiteGenerator implements GeneratorInterface
 {
@@ -23,18 +24,18 @@ class SiteGenerator implements GeneratorInterface
     {
         $context = $this->contextProvider->context;
 
+        (new Filesystem())->remove($context->getOutputDir());
+
         /** @var Collection $collection */
         foreach ($context->collections as $collection) {
-            $collectionDir = $context->collectionsDir . '/' . $collection->slug;
-
             $markdownFiles = $this->fileRepository
-                ->setDirectory(directory: $collectionDir)
+                ->setDirectory(directory: $context->getCollectionsDir() . '/' . $collection->slug)
                 ->findAll();
 
             $markdownModels = $this->markdownRenderer->renderFiles(fileInfos: $markdownFiles);
 
             foreach ($markdownModels as $markdownModel) {
-                $this->HTMLRenderer->render(MDFile: $markdownModel, collection: $collection, dir: $collectionDir);
+                $this->HTMLRenderer->render(collection: $collection, file: $markdownModel);
             }
         }
 
