@@ -6,8 +6,8 @@ namespace JTG\Mark\Renderer\HTML;
 
 use JTG\Mark\Context\Context;
 use JTG\Mark\Context\ContextProvider;
-use JTG\Mark\Model\Markdown\MDFile;
-use JTG\Mark\Model\Site\Collection;
+use JTG\Mark\Model\Context\CollectionType;
+use JTG\Mark\Model\Markdown\File;
 use JTG\Mark\Renderer\Twig\TwigRenderer;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -23,28 +23,30 @@ class HTMLRenderer
         $this->context = $contextProvider->context;
     }
 
-    public function render(Collection $collection, MDFile $file): void
+    public function render(CollectionType $collectionType, File $file): void
     {
         $htmlContent = $this->twigRenderer->render(
-            name: $this->getTemplate(collection: $collection, file: $file),
+            name: $this->getTemplate(collectionType: $collectionType, file: $file),
             context: [
-                'node' => $file->getFrontMatter(),
-                'content' => $file->getContent()
+                'node' => array_merge(
+                    $file->getFrontMatter(),
+                    ['content' => $file->getContent()]
+                )
             ]
         );
 
-        if (false === $this->filesystem->exists(files: $this->context->getOutputDir())) {
-            $this->filesystem->mkdir(dirs: $this->context->getOutputDir(), mode: 0755);
+        if (false === $this->filesystem->exists(files: $this->context->appConfig->getOutputDir())) {
+            $this->filesystem->mkdir(dirs: $this->context->appConfig->getOutputDir(), mode: 0755);
         }
 
-        $filename = $this->getOutputFilePath(collection: $collection, file: $file);
+        $filename = $this->getOutputFilePath(collectionType: $collectionType, file: $file);
         $this->filesystem->dumpFile(filename: $filename, content: $htmlContent);
     }
 
-    private function getTemplate(Collection $collection, MDFile $file): string
+    private function getTemplate(CollectionType $collectionType, File $file): string
     {
-        $template = sprintf('%s.html.twig', $file->getFrontMatter()['template'] ?? $collection->template);
-        $templatePath = $this->context->getTemplatesDir() . '/' . $template;
+        $template = sprintf('%s.html.twig', $file->getFrontMatter()['template'] ?? $collectionType->template);
+        $templatePath = $this->context->appConfig->getTemplatesDir() . '/' . $template;
 
         if (false === $this->filesystem->exists(files: $templatePath)) {
             return 'default_template.html.twig';
@@ -53,12 +55,14 @@ class HTMLRenderer
         return $template;
     }
 
-    private function getOutputFilePath(Collection $collection, MDFile $file): string
+    private function getOutputFilePath(CollectionType $collectionType, File $file): string
     {
-        $dir = $this->context->getCollectionsDir() . '/' . $collection->slug;
+        $appConfig = $this->context->appConfig;
+
+        $dir = $appConfig->getCollectionsDir() . '/' . $collectionType->slug;
         $relativePath = str_replace(search: $dir, replace: '', subject: $file->getRealPath());
         $newFilename = str_replace(search: $file->getExtension(), replace: 'html', subject: $relativePath);
 
-        return $this->context->getOutputDir() . '/' . $collection->slug . '/' . $newFilename;
+        return $appConfig->getOutputDir() . '/' . $collectionType->slug . '/' . $newFilename;
     }
 }

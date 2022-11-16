@@ -25,10 +25,12 @@ class TwigRenderer
     private function getTemplateDirs(): array
     {
         $filesystem = new Filesystem();
-        $templateDirs = [$this->context->vendorTemplatesDir];
+        $appConfig = $this->context->appConfig;
 
-        if (true === $filesystem->exists(files: $this->context->getTemplatesDir())) {
-            $templateDirs[] = $this->context->getTemplatesDir();
+        $templateDirs = [$this->context->markConfig->getTemplatesDir()];
+
+        if (true === $filesystem->exists(files: $appConfig->getTemplatesDir())) {
+            $templateDirs[] = $appConfig->getTemplatesDir();
         }
 
         return $templateDirs;

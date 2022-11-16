@@ -7,7 +7,7 @@ namespace JTG\Mark\Model\Markdown;
 use League\CommonMark\Extension\FrontMatter\Output\RenderedContentWithFrontMatter;
 use Symfony\Component\Finder\SplFileInfo;
 
-class MDFile
+class File
 {
     public function __construct(private readonly SplFileInfo                    $fileInfo,
                                 private readonly RenderedContentWithFrontMatter $renderedContent)

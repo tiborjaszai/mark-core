@@ -25,45 +25,45 @@ trait ContextTrait
 
     protected function buildContext(): Context
     {
-        $serializer = SerializerBuilder::create()->build();
+        // TODO: load collections and collection items, build relations etc.
 
-        $contextArray = [
-            Context::CONFIG_KERNEL_ROOT_DIR_ALIAS => $this->getKernelRootDir(),
-            Context::CONFIG_VENDOR_TEMPLATES_ALIAS => $this->getKernelRootDir() . '/dist/templates',
-            Context::CONFIG_PROJECT_ROOT_DIR_ALIAS => $this->getProjectDir()
-        ];
+        return $this->preBuildContext();
+    }
 
-        if ($config = $this->loadConfig()) {
-            $contextArray = array_merge($contextArray, $config);
-        }
-
-        return $serializer->deserialize(
-            data: json_encode($contextArray, JSON_THROW_ON_ERROR),
+    protected function preBuildContext(): Context
+    {
+        return (SerializerBuilder::create()->build())->deserialize(
+            data: json_encode($this->loadConfigs(), JSON_THROW_ON_ERROR),
             type: Context::class,
             format: 'json'
         );
     }
 
-    protected function loadConfig(): ?array
+    protected function loadConfigs(): array
     {
-        $configFilePath = $this->getProjectDir() . '/config.yaml';
+        return [
+            'mark_config' => [
+                'root_dir' => $this->getMarkRootDir()
+            ],
+            'app_config' => array_merge(
+                $this->loadAppConfig(),
+                ['root_dir' => $this->getAppRootDir()]
+            )
+        ];
+    }
+
+    protected function loadAppConfig(): array
+    {
+        $configFilePath = $this->getAppRootDir() . '/config.yaml';
 
         if (true === file_exists($configFilePath)) {
             try {
-                $config = Yaml::parseFile($configFilePath);
-
-                foreach (Context::IGNORED_LOCAL_CONFIGS as $ignoredLocalConfig) {
-                    if (true === isset($config[$ignoredLocalConfig])) {
-                        unset($config[$ignoredLocalConfig]);
-                    }
-                }
-
-                return $config;
+                return Yaml::parseFile($configFilePath);
             } catch (ParseException $exception) {
                 // ...
             }
         }
 
-        return null;
+        return [];
     }
 }

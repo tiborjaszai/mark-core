@@ -17,9 +17,9 @@ final class Kernel
     private ?ContainerBuilder $container = null;
     private bool $booted = false;
 
-    private ?string $kernelRootDir = null;
+    private ?string $markRootDir = null;
 
-    public function __construct(private readonly string $projectDir)
+    public function __construct(private readonly string $appRootDir)
     {
     }
 
@@ -50,24 +50,24 @@ final class Kernel
             ->container
             ->getParameterBag()
             ->add(array_merge(
-                $this->getKernelParameters(),
-                $this->getProjectParameters()
+                $this->getMarkParameters(),
+                $this->getAppParameters()
             ));
 
         return $this;
     }
 
-    protected function getKernelParameters(): array
+    protected function getMarkParameters(): array
     {
         return [
-            'kernel.root_dir' => $this->getKernelRootDir()
+            'mark.root_dir' => $this->getMarkRootDir()
         ];
     }
 
-    protected function getProjectParameters(): array
+    protected function getAppParameters(): array
     {
         return [
-            'project.root_dir' => $this->getProjectDir()
+            'app.root_dir' => $this->getAppRootDir()
         ];
     }
 
@@ -76,7 +76,7 @@ final class Kernel
      */
     public function registerServices(): Kernel
     {
-        $locator = new FileLocator(paths: $this->getKernelRootDir() . '/config');
+        $locator = new FileLocator(paths: $this->getMarkRootDir() . '/config');
 
         $loader = new YamlFileLoader(container: $this->container, locator: $locator);
         $loader->load(resource: 'services.yaml');

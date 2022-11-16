@@ -21,17 +21,17 @@ trait KernelTrait
         return $this->container;
     }
 
-    public function getProjectDir(): string
+    public function getMarkRootDir(): string
     {
-        return $this->projectDir;
-    }
-
-    public function getKernelRootDir(): string
-    {
-        if (null === $this->kernelRootDir) {
-            $this->kernelRootDir = dirname(path: __DIR__, levels: 2);
+        if (null === $this->markRootDir) {
+            $this->markRootDir = dirname(path: __DIR__, levels: 2);
         }
 
-        return $this->kernelRootDir;
+        return $this->markRootDir;
+    }
+
+    public function getAppRootDir(): string
+    {
+        return $this->appRootDir;
     }
 }

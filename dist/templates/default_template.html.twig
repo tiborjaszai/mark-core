@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="{{ context.language }}">
+<html lang="{{ context.config.language }}">
     <head>
         <meta charset="UTF-8">
         {% block meta %}{% endblock %}
 
-        <title>{{ node.title ?? context.title }}</title>
+        <title>{{ node.title ?? context.config.title }}</title>
 
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
-        {{ content }}
+        {{ node.content }}
 
         {% block javascripts %}{% endblock %}
     </body>

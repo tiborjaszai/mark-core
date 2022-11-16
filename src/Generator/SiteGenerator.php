@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace JTG\Mark\Generator;
 
 use JTG\Mark\Context\ContextProvider;
-use JTG\Mark\Model\Site\Collection;
 use JTG\Mark\Renderer\HTML\HTMLRenderer;
 use JTG\Mark\Renderer\Markdown\MarkdownRenderer;
 use JTG\Mark\Repository\FileRepository;
@@ -23,23 +22,23 @@ class SiteGenerator implements GeneratorInterface
     public function generate(): bool
     {
         $context = $this->contextProvider->context;
+        $appConfig = $context->appConfig;
 
-        (new Filesystem())->remove($context->getOutputDir());
+        (new Filesystem())->remove($appConfig->getOutputDir());
 
-        /** @var Collection $collection */
-        foreach ($context->collections as $collection) {
-            if (false === $collection->output) {
+        foreach ($appConfig->getCollectionTypes() as $collectionType) {
+            if (false === $collectionType->output) {
                 continue;
             }
 
             $markdownFiles = $this->fileRepository
-                ->setDirectory(directory: $context->getCollectionsDir() . '/' . $collection->slug)
+                ->setDirectory(directory: $appConfig->getCollectionsDir() . '/' . $collectionType->slug)
                 ->findAll();
 
             $markdownModels = $this->markdownRenderer->renderFiles(fileInfos: $markdownFiles);
 
             foreach ($markdownModels as $markdownModel) {
-                $this->HTMLRenderer->render(collection: $collection, file: $markdownModel);
+                $this->HTMLRenderer->render(collectionType: $collectionType, file: $markdownModel);
             }
         }
 

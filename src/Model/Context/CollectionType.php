@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace JTG\Mark\Model\Site;
+namespace JTG\Mark\Model\Context;
 
-class Collection
+class CollectionType
 {
     public function __construct(public readonly string $name,
                                 public readonly string $slug,
