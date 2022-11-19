@@ -30,8 +30,31 @@ trait KernelTrait
         return $this->markRootDir;
     }
 
+    public function getMarkConfigDir(): string
+    {
+        return $this->getMarkRootDir() . DIRECTORY_SEPARATOR . 'config';
+    }
+
+    public function getMarkConfigFile(): string
+    {
+        return $this->getMarkConfigDir() . DIRECTORY_SEPARATOR . 'config.yaml';
+    }
+
     public function getAppRootDir(): string
     {
         return $this->appRootDir;
+    }
+
+    public function getAppConfigFile(): string
+    {
+        if ('prod' === $this->env) {
+            $prodConfigFilePath = $this->getAppRootDir() . DIRECTORY_SEPARATOR . 'config_prod.yaml';
+
+            if (true === file_exists(filename: $prodConfigFilePath)) {
+                return $prodConfigFilePath;
+            }
+        }
+
+        return $this->getAppRootDir() . DIRECTORY_SEPARATOR . 'config.yaml';
     }
 }

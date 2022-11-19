@@ -8,12 +8,14 @@ use Exception;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\Dotenv\Dotenv;
 
 final class Kernel
 {
     use ContextTrait;
     use KernelTrait;
 
+    private string $env = 'dev';
     private ?ContainerBuilder $container = null;
     private bool $booted = false;
 
@@ -21,6 +23,12 @@ final class Kernel
 
     public function __construct(private readonly string $appRootDir)
     {
+        $dotEnvFilePath = $this->getAppRootDir() . DIRECTORY_SEPARATOR . '.env';
+
+        if (true === file_exists(filename: $dotEnvFilePath)) {
+            (new Dotenv())->load(path: $dotEnvFilePath);
+            $this->env = $_ENV['APP_ENV'] ?? 'dev';
+        }
     }
 
     public function boot(): void
@@ -60,14 +68,17 @@ final class Kernel
     protected function getMarkParameters(): array
     {
         return [
-            'mark.root_dir' => $this->getMarkRootDir()
+            'mark.root_dir' => $this->getMarkRootDir(),
+            'mark.config_dir' => $this->getMarkConfigDir(),
+            'mark.config_file_path' => $this->getMarkConfigFile()
         ];
     }
 
     protected function getAppParameters(): array
     {
         return [
-            'app.root_dir' => $this->getAppRootDir()
+            'app.root_dir' => $this->getAppRootDir(),
+            'app.config_file_path' => $this->getAppConfigFile()
         ];
     }
 
@@ -76,7 +87,7 @@ final class Kernel
      */
     public function registerServices(): Kernel
     {
-        $locator = new FileLocator(paths: $this->getMarkRootDir() . '/config');
+        $locator = new FileLocator(paths: $this->getMarkConfigDir());
 
         $loader = new YamlFileLoader(container: $this->container, locator: $locator);
         $loader->load(resource: 'services.yaml');

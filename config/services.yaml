@@ -11,6 +11,7 @@ services:
             - '../src/Context/Context.php'
             - '../src/Kernel/'
             - '../src/Model/'
+            - '../src/Util/'
 
     _instanceof:
         Symfony\Component\Console\Command\Command:

@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace JTG\Mark;
 
+use JTG\Mark\Context\ContextProvider;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 
 final class MarkApplication extends Application
 {
-    private const APP_NAME = 'Mark';
-    private const APP_VERSION = 'v0.1';
-
-    public function __construct(iterable $commands)
+    public function __construct(iterable        $commands,
+                                ContextProvider $contextProvider)
     {
-        parent::__construct(self::APP_NAME, self::APP_VERSION);
+        $markConfig = $contextProvider->context->markConfig;
+
+        parent::__construct($markConfig->appName, $markConfig->appName);
 
         /** @var Command $command */
         foreach ($commands as $command) {

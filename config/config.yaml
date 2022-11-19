@@ -1,0 +1,59 @@
+mark:
+    app_name: Mark
+    app_version: v0.2
+
+    source_dir: source
+    templates_dir: templates
+
+app:
+    # Site information and parameters
+    site:
+        host: http://127.0.0.1
+        base_url: ''
+        port: 80
+
+        locale: en
+
+        title: Mark site
+        description: Mark site description
+
+    # Directories
+    source_dir: source
+    output_dir: build
+    collections_dir: ''
+    templates_dir: templates
+    data_dir: data
+
+    collections:
+        -   name: posts
+            template: default_template
+            output: true
+
+    # Handling Reading
+    safe: false
+    exclude_dirs:
+        - assets
+        - bin
+        - build
+        - node_modules
+        - tests
+        - var
+        - vendor
+        - .git
+        - .idea
+        - .vscode
+    exclude_files:
+        - .gitkeep
+        - .gitignore
+        - composer.json
+        - composer.lock
+        - config.yaml
+        - LICENSE
+        - README.md
+
+    encoding: utf-8
+
+    # Outputting
+    permalink: date
+    enable_pagination: true
+    paginate_path: page:num

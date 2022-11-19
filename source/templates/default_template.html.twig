@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="{{ context.config.language }}">
+<html lang="{{ context.appConfig.site.locale }}">
     <head>
-        <meta charset="UTF-8">
+        <meta charset="{{ context.appConfig.encoding }}">
         {% block meta %}{% endblock %}
 
-        <title>{{ node.title ?? context.config.title }}</title>
+        <title>{{ node.title ?? context.appConfig.site.title }}</title>
 
         {% block stylesheets %}{% endblock %}
     </head>

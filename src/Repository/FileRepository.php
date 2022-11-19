@@ -4,47 +4,55 @@ declare(strict_types=1);
 
 namespace JTG\Mark\Repository;
 
+use JTG\Mark\Context\Context;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
 class FileRepository
 {
-    private const ALLOWED_PATTERNS = [
-        '*.md',
-        '*.markdown'
-    ];
-
-    private string $directory;
+    private Context $context;
     private Filesystem $filesystem;
 
-    public function __construct()
+    public function __construct(Context $context)
     {
+        $this->context = $context;
         $this->filesystem = new Filesystem();
     }
 
     # region getter methods
-
-    public function setDirectory(string $directory): FileRepository
-    {
-        $this->directory = $directory;
-
-        return $this;
-    }
 
     /**
      * @return array<SplFileInfo>
      */
     public function findAll(): array
     {
-        if (false === $this->filesystem->exists(files: $this->directory)) {
+        $config = $this->context->appConfig;
+        $sourceDirPath = $config->getSourceDirPath();
+
+        if (false === $this->filesystem->exists(files: $sourceDirPath)) {
             return [];
         }
 
         $finder = (new Finder())
-            ->in(dirs: $this->directory)
-            ->name(patterns: self::ALLOWED_PATTERNS)
-            ->sortByName();
+            ->in(dirs: $sourceDirPath)
+            ->ignoreVCS(ignoreVCS: true)
+            ->ignoreDotFiles(ignoreDotFiles: false);
+
+        // Exclude dirs
+        foreach ($config->excludeDirs as $excludeDir) {
+            $finder->exclude(dirs: $excludeDir);
+        }
+
+        // Exclude template dir
+        $finder->exclude(dirs: $config->getTemplatesDir());
+
+        // Exclude files
+        foreach ($config->excludeFiles as $excludeFile) {
+            $finder->files()->notName(patterns: $excludeFile);
+        }
+
+        $finder->sortByName();
 
         return (array) $finder->files()->getIterator();
     }

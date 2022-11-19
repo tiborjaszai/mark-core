@@ -29,7 +29,7 @@ class MarkGenerateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         if (false === $this->generator->generate()) {
-            $this->io->error('Failed to generate the site.');
+            $this->io->error(message: 'Failed to generate the site.');
             return self::FAILURE;
         }
 

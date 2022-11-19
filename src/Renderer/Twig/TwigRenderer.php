@@ -18,19 +18,16 @@ class TwigRenderer
     public function __construct(ContextProvider $contextProvider)
     {
         $this->context = $contextProvider->context;
-
         $this->initTwigEnv($this->getTemplateDirs());
     }
 
     private function getTemplateDirs(): array
     {
-        $filesystem = new Filesystem();
         $appConfig = $this->context->appConfig;
+        $templateDirs = [$this->context->markConfig->getTemplatesDirPath()];
 
-        $templateDirs = [$this->context->markConfig->getTemplatesDir()];
-
-        if (true === $filesystem->exists(files: $appConfig->getTemplatesDir())) {
-            $templateDirs[] = $appConfig->getTemplatesDir();
+        if (true === (new Filesystem())->exists(files: $appConfig->getTemplatesDirPath())) {
+            $templateDirs[] = $appConfig->getTemplatesDirPath();
         }
 
         return $templateDirs;
@@ -40,7 +37,7 @@ class TwigRenderer
     {
         $this->env = new Environment(
             loader: new FilesystemLoader(paths: $templateDirs),
-            options: ['autoescape' => false]
+            options: ['autoescape' => $this->context->appConfig->safe]
         );
     }
 

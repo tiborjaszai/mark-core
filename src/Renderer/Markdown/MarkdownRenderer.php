@@ -4,43 +4,41 @@ declare(strict_types=1);
 
 namespace JTG\Mark\Renderer\Markdown;
 
-use JTG\Mark\Model\Markdown\File;
+use JTG\Mark\Model\Site\File;
+use League\CommonMark\Environment\Environment;
+use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\FrontMatter\FrontMatterExtension;
 use League\CommonMark\Extension\FrontMatter\Output\RenderedContentWithFrontMatter;
+use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use League\CommonMark\MarkdownConverter;
-use Symfony\Component\Finder\SplFileInfo;
 
 class MarkdownRenderer extends MarkdownConverter
 {
-    public function __construct(EnvironmentProvider $provider)
+    public const EXTENSIONS = [
+        'md',
+        'markdown'
+    ];
+
+    public function __construct()
     {
-        parent::__construct(environment: $provider->get());
+        $environment = (new Environment([]))
+            ->addExtension(extension: new CommonMarkCoreExtension())
+            ->addExtension(extension: new GithubFlavoredMarkdownExtension())
+            ->addExtension(extension: new FrontMatterExtension());
+
+        parent::__construct(environment: $environment);
     }
 
-    public function renderFile(SplFileInfo $fileInfo): ?File
+    public function renderFile(File $file): ?File
     {
-        $renderedContent = $this->convert(input: $fileInfo->getContents());
+        $renderedContent = $this->convert(input: $file->getContent());
 
         if ($renderedContent instanceof RenderedContentWithFrontMatter) {
-            return new File(fileInfo: $fileInfo, renderedContent: $renderedContent);
+            return $file
+                ->setContent($renderedContent->getContent())
+                ->setParams($renderedContent->getFrontMatter());
         }
 
         return null;
-    }
-
-    /**
-     * @param array<SplFileInfo> $fileInfos
-     * @return array<File>
-     */
-    public function renderFiles(array $fileInfos): array
-    {
-        $models = [];
-
-        foreach ($fileInfos as $fileInfo) {
-            if ($mdFileModel = $this->renderFile(fileInfo: $fileInfo)) {
-                $models[] = $mdFileModel;
-            }
-        }
-
-        return $models;
     }
 }

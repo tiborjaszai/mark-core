@@ -7,38 +7,44 @@ namespace JTG\Mark\Generator;
 use JTG\Mark\Context\ContextProvider;
 use JTG\Mark\Renderer\HTML\HTMLRenderer;
 use JTG\Mark\Renderer\Markdown\MarkdownRenderer;
-use JTG\Mark\Repository\FileRepository;
 use Symfony\Component\Filesystem\Filesystem;
 
-class SiteGenerator implements GeneratorInterface
+class SiteGenerator
 {
-    public function __construct(private readonly MarkdownRenderer $markdownRenderer,
+    public function __construct(private readonly ContextProvider  $contextProvider,
                                 private readonly HTMLRenderer     $HTMLRenderer,
-                                private readonly FileRepository   $fileRepository,
-                                private readonly ContextProvider  $contextProvider)
+                                private readonly MarkdownRenderer $markdownRenderer)
     {
     }
 
     public function generate(): bool
     {
+        $filesystem = new Filesystem();
         $context = $this->contextProvider->context;
-        $appConfig = $context->appConfig;
 
-        (new Filesystem())->remove($appConfig->getOutputDir());
+        $filesystem->remove(files: $context->appConfig->getOutputDirPath());
+        $filesystem->mkdir(dirs: $context->appConfig->getOutputDirPath(), mode: 0755);
 
-        foreach ($appConfig->getCollectionTypes() as $collectionType) {
-            if (false === $collectionType->output) {
+        foreach ($context->getCollections() as $collection) {
+            if (!$collection->getOutput() || 0 === $collection->getItemsCount()) {
                 continue;
             }
 
-            $markdownFiles = $this->fileRepository
-                ->setDirectory(directory: $appConfig->getCollectionsDir() . '/' . $collectionType->slug)
-                ->findAll();
+            foreach ($collection->getItems() as $file) {
+                switch (true) {
+                    case true === in_array($file->getExtension(), MarkdownRenderer::EXTENSIONS, true):
+                        if ($renderedFile = $this->markdownRenderer->renderFile(file: $file)) {
+                            $this->HTMLRenderer->render(file: $renderedFile);
+                        }
+                        break;
 
-            $markdownModels = $this->markdownRenderer->renderFiles(fileInfos: $markdownFiles);
-
-            foreach ($markdownModels as $markdownModel) {
-                $this->HTMLRenderer->render(collectionType: $collectionType, file: $markdownModel);
+                    default:
+                        $filesystem->copy(
+                            originFile: $file->getAbsolutePath(),
+                            targetFile: PathGenerator::generateOutputFilePath($context, $file),
+                            overwriteNewerFiles: true
+                        );
+                }
             }
         }
 

@@ -1,6 +1,6 @@
 # Mark core
 
-Core package for the "Mark" project. Mark is a simple static site generator.
+Core package for the "Mark" project. Mark is a simple static site generator. Inspired by [jekyll](https://jekyllrb.com/).
 
 ## Prerequisites
 
