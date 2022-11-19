@@ -6,7 +6,7 @@ namespace JTG\Mark\Model\Context\Config;
 
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
-fixes and improvementsuse JTG\Mark\Model\Context\Collection;
+use JTG\Mark\Model\Context\Collection;
 use JTG\Mark\Model\Context\Site;
 
 class AppConfig extends Config
