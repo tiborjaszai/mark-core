@@ -10,6 +10,7 @@ use JTG\Mark\Context\ContextProvider;
 use JTG\Mark\Model\Context\Collection as CollectionConfig;
 use JTG\Mark\Model\Site\Collection;
 use JTG\Mark\Model\Site\File as FileModel;
+use JTG\Mark\Renderer\Markdown\MarkdownRenderer;
 use JTG\Mark\Repository\FileRepository;
 use JTG\Mark\Util\ArrayHelper;
 use Symfony\Component\Finder\SplFileInfo;
@@ -59,9 +60,14 @@ trait ContextTrait
     {
         /** @var array<Collection> $collections */
         $collections = [];
+        $markdownRenderer = new MarkdownRenderer();
 
         foreach ($files as $file) {
             $fileModel = (FileModel::fromFileInfo(fileInfo: $file));
+
+            if (true === in_array($file->getExtension(), MarkdownRenderer::EXTENSIONS, true)) {
+                $fileModel = $markdownRenderer->renderFile(context: $context, file: $fileModel);
+            }
 
             if ($collectionConfig = $context->appConfig->getCollection(name: $fileModel->getCollectionName(), defaultGlobal: true)) {
                 $collectionName = $collectionConfig->name;

@@ -9,6 +9,8 @@ use JTG\Mark\Model\Site\File;
 
 class PathGenerator
 {
+    // TODO: Path builder service...
+
     public static function generateOutputFilePath(Context $context, File $file): string
     {
         $outputDir = $context->appConfig->getOutputDirPath();
@@ -19,5 +21,21 @@ class PathGenerator
     {
         $filepath = self::generateOutputFilePath(context: $context, file: $file);
         return str_replace(search: $file->getExtension(), replace: 'html', subject: $filepath);
+    }
+
+    public static function generateHTMLOutputURL(Context $context, File $file): string
+    {
+        $siteConfig = $context->appConfig->site;
+
+        $filepathname = $file->getRelativePathname();
+        $htmlFilepathname = str_replace(search: $file->getExtension(), replace: 'html', subject: $filepathname);
+
+        return sprintf(
+            '%s:%s/%s%s',
+            $siteConfig->host,
+            $siteConfig->port,
+            !empty($siteConfig->baseUrl) ? ($siteConfig->baseUrl . '/') : '',
+            $htmlFilepathname
+        );
     }
 }

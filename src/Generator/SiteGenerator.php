@@ -12,8 +12,7 @@ use Symfony\Component\Filesystem\Filesystem;
 class SiteGenerator
 {
     public function __construct(private readonly ContextProvider  $contextProvider,
-                                private readonly HTMLRenderer     $HTMLRenderer,
-                                private readonly MarkdownRenderer $markdownRenderer)
+                                private readonly HTMLRenderer     $HTMLRenderer)
     {
     }
 
@@ -33,9 +32,7 @@ class SiteGenerator
             foreach ($collection->getItems() as $file) {
                 switch (true) {
                     case true === in_array($file->getExtension(), MarkdownRenderer::EXTENSIONS, true):
-                        if ($renderedFile = $this->markdownRenderer->renderFile(file: $file)) {
-                            $this->HTMLRenderer->render(file: $renderedFile);
-                        }
+                        $this->HTMLRenderer->render(file: $file);
                         break;
 
                     default:
