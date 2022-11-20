@@ -87,6 +87,7 @@ trait ContextTrait
         $appConfig = $this->loadConfigFile($this->getAppConfigFile());
 
         return [
+            'env' => $this->env,
             'mark_config' => array_merge($defaultConfigs['mark'], ['root_dir' => $this->getMarkRootDir()]),
             'app_config' => array_merge(
                 ArrayHelper::recursiveAssocMerge(first: $defaultConfigs['app'], second: $appConfig),

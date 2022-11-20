@@ -11,12 +11,19 @@ use JTG\Mark\Model\Site\Collection;
 
 class Context
 {
+    private ?string $env = null;
+
     #[Exclude]
     private array $collections = [];
 
     public function __construct(public readonly MarkConfig $markConfig,
                                 public readonly AppConfig  $appConfig)
     {
+    }
+
+    public function getEnv(): ?string
+    {
+        return $this->env;
     }
 
     /**

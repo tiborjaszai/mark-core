@@ -15,7 +15,9 @@ final class Kernel
     use ContextTrait;
     use KernelTrait;
 
-    private string $env = 'dev';
+    public const ENV_DEV = 'dev';
+
+    private string $env = self::ENV_DEV;
     private ?ContainerBuilder $container = null;
     private bool $booted = false;
 
@@ -27,7 +29,7 @@ final class Kernel
 
         if (true === file_exists(filename: $dotEnvFilePath)) {
             (new Dotenv())->load(path: $dotEnvFilePath);
-            $this->env = $_ENV['APP_ENV'] ?? 'dev';
+            $this->env = $_ENV['APP_ENV'] ?? self::ENV_DEV;
         }
     }
 

@@ -6,8 +6,10 @@ namespace JTG\Mark\Renderer\Twig;
 
 use JTG\Mark\Context\Context;
 use JTG\Mark\Context\ContextProvider;
+use JTG\Mark\Kernel\Kernel;
 use Symfony\Component\Filesystem\Filesystem;
 use Twig\Environment;
+use Twig\Extension\DebugExtension;
 use Twig\Loader\FilesystemLoader;
 
 class TwigRenderer
@@ -37,8 +39,16 @@ class TwigRenderer
     {
         $this->env = new Environment(
             loader: new FilesystemLoader(paths: $templateDirs),
-            options: ['autoescape' => $this->context->appConfig->safe]
+            options: [
+                'autoescape' => $this->context->appConfig->safe,
+                'debug' => Kernel::ENV_DEV === $this->context->getEnv()
+
+            ]
         );
+
+        if (Kernel::ENV_DEV === $this->context->getEnv()) {
+            $this->env->addExtension(new DebugExtension());
+        }
     }
 
     public function render(string $name, array $context = []): string
