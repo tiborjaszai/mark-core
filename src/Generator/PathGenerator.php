@@ -31,10 +31,10 @@ class PathGenerator
         $htmlFilepathname = str_replace(search: $file->getExtension(), replace: 'html', subject: $filepathname);
 
         return sprintf(
-            '%s:%s/%s%s',
+            '%s%s/%s%s',
             $siteConfig->host,
-            $siteConfig->port,
-            !empty($siteConfig->baseUrl) ? ($siteConfig->baseUrl . '/') : '',
+            80 !== $siteConfig->port ? (':' . $siteConfig->port) : '',
+            false === empty($siteConfig->baseUrl) ? ($siteConfig->baseUrl . '/') : '',
             $htmlFilepathname
         );
     }
