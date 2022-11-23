@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JTG\Mark\Model\Site;
+namespace JTG\Mark\Dto\Site;
 
+use JTG\Mark\Dto\Context\Context;
+use JTG\Mark\Util\FileHelper;
 use Symfony\Component\Finder\SplFileInfo;
 
 class File
@@ -12,27 +14,49 @@ class File
 
     private ?string $filename;
     private ?string $filenameWithoutExtension;
+
     private ?string $extension;
+
     private ?string $relativePath;
     private ?string $relativePathname;
+
     private ?string $absolutePath;
 
     private ?string $content = null;
+    private ?string $renderedContent = null;
     private array $params = [];
 
-    public static function fromFileInfo(SplFileInfo $fileInfo): File
+    private ?string $outputFilepath = null;
+    private ?string $outputFilepathname = null;
+
+    public static function fromFileInfo(Context $context, SplFileInfo $fileInfo): File
     {
-        return (new self())
-            ->setFilename($fileInfo->getFilename())
-            ->setFilenameWithoutExtension($fileInfo->getFilenameWithoutExtension())
-            ->setExtension($fileInfo->getExtension())
-            ->setRelativePath($fileInfo->getRelativePath())
-            ->setRelativePathname($fileInfo->getRelativePathname())
-            ->setAbsolutePath($fileInfo->getRealPath())
-            ->setContent($fileInfo->getContents());
+        $file = (new self())
+            ->setFilename(filename: $fileInfo->getFilename())
+            ->setFilenameWithoutExtension(filenameWithoutExtension: $fileInfo->getFilenameWithoutExtension())
+            ->setExtension(extension: $fileInfo->getExtension())
+            ->setRelativePath(relativePath: $fileInfo->getRelativePath())
+            ->setRelativePathname(relativePathname: $fileInfo->getRelativePathname())
+            ->setAbsolutePath(absolutePath: $fileInfo->getRealPath())
+            ->setContent(content: $fileInfo->getContents());
+
+        $file->setOutputFilepath(outputFilepath: FileHelper::generateOutputFilePath(context: $context, file: $file));
+
+        return $file;
     }
 
     # region getters
+
+    public function getId(): ?string
+    {
+        $id = str_replace(search: ".{$this->getExtension()}", replace: '', subject: $this->getRelativePathname());
+        return $id ?: $this->getRelativePathname();
+    }
+
+    public function getRouteId(): string
+    {
+        return $this->getOutputFilepathname();
+    }
 
     public function getCollection(): ?Collection
     {
@@ -131,6 +155,17 @@ class File
         return $this;
     }
 
+    public function getRenderedContent(): ?string
+    {
+        return $this->renderedContent;
+    }
+
+    public function setRenderedContent(?string $content): File
+    {
+        $this->renderedContent = $content;
+        return $this;
+    }
+
     public function getParams(): array
     {
         return $this->params;
@@ -139,6 +174,28 @@ class File
     public function setParams(array $params): File
     {
         $this->params = $params;
+        return $this;
+    }
+
+    public function getOutputFilepath(): ?string
+    {
+        return $this->outputFilepath;
+    }
+
+    public function setOutputFilepath(?string $outputFilepath): File
+    {
+        $this->outputFilepath = $outputFilepath;
+        return $this;
+    }
+
+    public function getOutputFilepathname(): ?string
+    {
+        return $this->outputFilepathname ?? $this->getRelativePathname();
+    }
+
+    public function setOutputFilepathname(?string $outputFilepathname): File
+    {
+        $this->outputFilepathname = $outputFilepathname;
         return $this;
     }
 

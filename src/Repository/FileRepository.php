@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace JTG\Mark\Repository;
 
-use JTG\Mark\Context\Context;
+use JTG\Mark\Dto\Context\Context;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
 class FileRepository
 {
-    private Context $context;
+    private ?Context $context;
     private Filesystem $filesystem;
 
-    public function __construct(Context $context)
+    public function __construct(?Context $context = null)
     {
         $this->context = $context;
         $this->filesystem = new Filesystem();
@@ -27,6 +27,10 @@ class FileRepository
      */
     public function findAll(): array
     {
+        if (null === $this->context) {
+            return [];
+        }
+
         $config = $this->context->appConfig;
         $sourceDirPath = $config->getSourceDirPath();
 
@@ -45,7 +49,7 @@ class FileRepository
         }
 
         // Exclude template dir
-        $finder->exclude(dirs: $config->getTemplatesDir());
+        $finder->exclude(dirs: $config->templatesDir);
 
         // Exclude files
         foreach ($config->excludeFiles as $excludeFile) {

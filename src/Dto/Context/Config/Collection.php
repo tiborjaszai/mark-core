@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JTG\Mark\Model\Context;
+namespace JTG\Mark\Dto\Context\Config;
 
 class Collection
 {

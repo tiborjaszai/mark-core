@@ -8,14 +8,12 @@ services:
     JTG\Mark\:
         resource: '../src/'
         exclude:
-            - '../src/Context/Context.php'
+            - '../src/DependencyInjection/'
+            - '../src/Dto/'
+            - '../src/Event/'
             - '../src/Kernel/'
-            - '../src/Model/'
+            - '../src/Repository/'
             - '../src/Util/'
-
-    _instanceof:
-        Symfony\Component\Console\Command\Command:
-            tags: [ 'command' ]
 
     JTG\Mark\MarkApplication:
         public: true
@@ -27,4 +25,13 @@ services:
         arguments:
             $container: '@service_container'
 
-    Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface: '@Symfony\Component\DependencyInjection\ParameterBag\ContainerBag'
+    Symfony\Component\EventDispatcher\EventDispatcher:
+        class: Symfony\Component\EventDispatcher\EventDispatcher
+        public: true
+
+    _instanceof:
+        Symfony\Component\Console\Command\Command:
+            tags: [ 'command' ]
+
+        Symfony\Component\EventDispatcher\EventSubscriberInterface:
+            tags: [ 'mark.event_subscriber' ]

@@ -11,21 +11,21 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class SiteGenerator
 {
-    public function __construct(private readonly ContextProvider  $contextProvider,
-                                private readonly HTMLRenderer     $HTMLRenderer)
+    public function __construct(private readonly ContextProvider $contextProvider,
+                                private readonly HTMLRenderer    $HTMLRenderer)
     {
     }
 
     public function generate(): bool
     {
         $filesystem = new Filesystem();
-        $context = $this->contextProvider->context;
+        $context = $this->contextProvider->getContext();
 
         $filesystem->remove(files: $context->appConfig->getOutputDirPath());
         $filesystem->mkdir(dirs: $context->appConfig->getOutputDirPath(), mode: 0755);
 
         foreach ($context->getCollections() as $collection) {
-            if (!$collection->getOutput() || 0 === $collection->getItemsCount()) {
+            if (false === $collection->getOutput() || 0 === $collection->getItemsCount()) {
                 continue;
             }
 
@@ -38,7 +38,7 @@ class SiteGenerator
                     default:
                         $filesystem->copy(
                             originFile: $file->getAbsolutePath(),
-                            targetFile: PathGenerator::generateOutputFilePath($context, $file),
+                            targetFile: $file->getOutputFilepath(),
                             overwriteNewerFiles: true
                         );
                 }

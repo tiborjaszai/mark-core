@@ -4,22 +4,21 @@ declare(strict_types=1);
 
 namespace JTG\Mark\Renderer\HTML;
 
-use JTG\Mark\Context\Context;
 use JTG\Mark\Context\ContextProvider;
-use JTG\Mark\Generator\PathGenerator;
-use JTG\Mark\Model\Site\File;
+use JTG\Mark\Dto\Context\Context;
+use JTG\Mark\Dto\Site\File;
 use JTG\Mark\Renderer\Twig\TwigRenderer;
 use Symfony\Component\Filesystem\Filesystem;
 
 class HTMLRenderer
 {
+    private ?Context $context;
     private Filesystem $filesystem;
-    private Context $context;
 
-    public function __construct(ContextProvider               $contextProvider,
-                                private readonly TwigRenderer $twigRenderer)
+    public function __construct(private readonly ContextProvider $contextProvider,
+                                private readonly TwigRenderer    $twigRenderer)
     {
-        $this->context = $contextProvider->context;
+        $this->context = $this->contextProvider->getContext();
         $this->filesystem = new Filesystem();
     }
 
@@ -30,13 +29,12 @@ class HTMLRenderer
             context: [
                 'node' => array_merge(
                     $file->getParams(),
-                    ['content' => $file->getContent()]
+                    ['content' => $file->getRenderedContent()]
                 )
             ]
         );
 
-        $filename = PathGenerator::generateHTMLOutputFilePath(context: $this->context, file: $file);
-        $this->filesystem->dumpFile(filename: $filename, content: $htmlContent);
+        $this->filesystem->dumpFile(filename: $file->getOutputFilepath(), content: $htmlContent);
     }
 
     private function getTemplate(File $file): string

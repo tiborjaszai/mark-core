@@ -8,18 +8,18 @@ use JTG\Mark\Context\ContextProvider;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 
-final class MarkApplication extends Application
+class MarkApplication extends Application
 {
-    public function __construct(iterable        $commands,
-                                ContextProvider $contextProvider)
+    public function __construct(iterable                         $commands,
+                                private readonly ContextProvider $contextProvider)
     {
-        $markConfig = $contextProvider->context->markConfig;
+        $markConfig = $contextProvider->getContext()->markConfig;
 
-        parent::__construct($markConfig->appName, $markConfig->appName);
+        parent::__construct(name: $markConfig->appName, version: $markConfig->appVersion);
 
         /** @var Command $command */
         foreach ($commands as $command) {
-            $this->add($command);
+            $this->add(command: $command);
         }
     }
 }

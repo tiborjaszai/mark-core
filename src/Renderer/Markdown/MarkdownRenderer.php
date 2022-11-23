@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace JTG\Mark\Renderer\Markdown;
 
-use JTG\Mark\Context\Context;
-use JTG\Mark\Generator\PathGenerator;
-use JTG\Mark\Model\Site\File;
+use JTG\Mark\Dto\Context\Context;
+use JTG\Mark\Dto\Site\File;
+use JTG\Mark\Util\FileHelper;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\FrontMatter\FrontMatterExtension;
@@ -33,15 +33,18 @@ class MarkdownRenderer extends MarkdownConverter
 
     public function renderFile(Context $context, File $file): ?File
     {
+        if (false === in_array($file->getExtension(), self::EXTENSIONS, true)) {
+            return $file;
+        }
+
         $renderedContent = $this->convert(input: $file->getContent());
 
         if ($renderedContent instanceof RenderedContentWithFrontMatter) {
             return $file
-                ->setContent($renderedContent->getContent())
-                ->setParams(array_merge(
-                    $renderedContent->getFrontMatter(),
-                    ['url' => PathGenerator::generateHTMLOutputURL(context: $context, file: $file)]
-                ));
+                ->setRenderedContent(content: $renderedContent->getContent())
+                ->setParams(params: $renderedContent->getFrontMatter())
+                ->setOutputFilepath(outputFilepath: FileHelper::generateHTMLOutputFilePath(context: $context, file: $file))
+                ->setOutputFilepathname(outputFilepathname: FileHelper::generateHTMLOutputPathname(file: $file));
         }
 
         return null;

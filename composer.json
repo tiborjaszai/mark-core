@@ -34,7 +34,9 @@
         "jms/serializer": "^3.18",
         "symfony/string": "^6.1",
         "symfony/var-dumper": "^6.1",
-        "symfony/dotenv": "^6.1"
+        "symfony/dotenv": "^6.1",
+        "symfony/routing": "^6.1",
+        "symfony/event-dispatcher": "^6.1"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest"

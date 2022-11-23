@@ -21,6 +21,11 @@ trait KernelTrait
         return $this->container;
     }
 
+    public function getEnv(): string
+    {
+        return $this->env;
+    }
+
     public function getMarkRootDir(): string
     {
         if (null === $this->markRootDir) {

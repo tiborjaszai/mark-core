@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JTG\Mark\Context;
+namespace JTG\Mark\Dto\Context;
 
 use JMS\Serializer\Annotation\Exclude;
-use JTG\Mark\Model\Context\Config\AppConfig;
-use JTG\Mark\Model\Context\Config\MarkConfig;
-use JTG\Mark\Model\Site\Collection;
+use JTG\Mark\Dto\Context\Config\AppConfig;
+use JTG\Mark\Dto\Context\Config\MarkConfig;
+use JTG\Mark\Dto\Site\Collection;
 
 class Context
 {

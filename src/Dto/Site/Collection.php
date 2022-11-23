@@ -2,15 +2,16 @@
 
 declare(strict_types=1);
 
-namespace JTG\Mark\Model\Site;
+namespace JTG\Mark\Dto\Site;
 
-use JTG\Mark\Model\Context\Collection as CollectionConfig;
+use JTG\Mark\Dto\Context\Config\Collection as CollectionConfig;
 
 class Collection
 {
     private ?string $name = null;
     private ?string $template = null;
     private ?bool $output = false;
+
     private array $items = [];
 
     public static function fromCollectionConfig(CollectionConfig $collectionConfig): Collection
@@ -26,6 +27,11 @@ class Collection
     public function getName(): ?string
     {
         return $this->name;
+    }
+
+    public function getOriginalName(): ?string
+    {
+        return $this->name === 'root' ? '' : $this->name;
     }
 
     public function setName(?string $name): Collection
@@ -64,6 +70,11 @@ class Collection
         return $this->items;
     }
 
+    public function getItem(string $relativePathname): ?File
+    {
+        return $this->items[$relativePathname] ?? null;
+    }
+
     /**
      * @param array<File> $items
      */
@@ -80,7 +91,7 @@ class Collection
 
     public function addItem(File $item): Collection
     {
-        $this->items[] = $item;
+        $this->items[$item->getId()] = $item;
         $item->setCollection($this);
 
         return $this;

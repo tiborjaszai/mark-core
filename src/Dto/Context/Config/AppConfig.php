@@ -2,12 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JTG\Mark\Model\Context\Config;
+namespace JTG\Mark\Dto\Context\Config;
 
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
-use JTG\Mark\Model\Context\Collection;
-use JTG\Mark\Model\Context\Site;
 
 class AppConfig extends Config
 {
@@ -21,18 +19,18 @@ class AppConfig extends Config
     #[Type(name: 'array<' . Collection::class . '>')]
     private array $collections = [];
 
-    public function __construct(public readonly string    $rootDir,
-                                public readonly Site      $site,
-                                protected readonly string $sourceDir,
-                                protected readonly string $templatesDir,
-                                private readonly string   $dataDir,
-                                private readonly string   $collectionsDir,
-                                private readonly string   $outputDir,
-                                public readonly bool      $safe,
-                                public readonly string    $encoding,
-                                public readonly string    $permalink,
-                                public readonly bool      $enablePagination,
-                                public readonly string    $paginatePath)
+    public function __construct(public readonly string  $rootDir,
+                                public readonly Site    $site,
+                                public readonly string  $sourceDir,
+                                private readonly string $dataDir,
+                                private readonly string $collectionsDir,
+                                public readonly string  $templatesDir,
+                                private readonly string $outputDir,
+                                public readonly bool    $safe,
+                                public readonly string  $encoding,
+                                public readonly string  $permalink,
+                                public readonly bool    $enablePagination,
+                                public readonly string  $paginatePath)
     {
         parent::__construct($this->rootDir, $this->sourceDir, $this->templatesDir);
     }
@@ -60,14 +58,14 @@ class AppConfig extends Config
         return $this->collections;
     }
 
-    public function getCollection(?string $name, bool $defaultGlobal = false): ?Collection
+    public function getCollection(?string $name, bool $defaultRoot = false): ?Collection
     {
         switch (true) {
-            case null === $name && true === $defaultGlobal:
-                $name = 'global';
+            case null === $name && true === $defaultRoot:
+                $name = 'root';
                 break;
 
-            case null === $name && false === $defaultGlobal:
+            case null === $name && false === $defaultRoot:
                 return null;
         }
 
