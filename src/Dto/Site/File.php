@@ -49,8 +49,7 @@ class File
 
     public function getId(): ?string
     {
-        $id = str_replace(search: ".{$this->getExtension()}", replace: '', subject: $this->getRelativePathname());
-        return $id ?: $this->getRelativePathname();
+        return $this->getRelativePathname();
     }
 
     public function getRouteId(): string

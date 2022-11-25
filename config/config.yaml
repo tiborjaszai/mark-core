@@ -5,6 +5,10 @@ mark:
     source_dir: source
     templates_dir: templates
 
+    yaml_extensions:
+        - yaml
+        - yml
+
 app:
     # Site information and parameters
     site:
@@ -33,9 +37,7 @@ app:
     # Handling Reading
     safe: false
     exclude_dirs:
-        - assets
         - bin
-        - build
         - node_modules
         - tests
         - var

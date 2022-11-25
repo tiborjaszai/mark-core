@@ -44,7 +44,7 @@ class InitializeContextPass implements CompilerPassInterface
 
         $context
             ->appConfig
-            ->addCollection(new CollectionConfig(name: 'root', template: 'default_template', output: true));
+            ->addCollection(new CollectionConfig(name: 'root', output: true, template: 'default_template'));
 
         return $context;
     }
