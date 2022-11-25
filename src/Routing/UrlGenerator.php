@@ -48,8 +48,9 @@ class UrlGenerator
             return;
         }
 
+        $routes->add(name: 'home_index', route: new Route(path: '/'));
         $routes->add(
-            name: $collectionConfig->name,
+            name: 'node_show',
             route: new Route(
                 path: '/{id}',
                 defaults: [],
