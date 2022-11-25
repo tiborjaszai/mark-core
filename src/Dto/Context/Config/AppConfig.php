@@ -22,7 +22,7 @@ class AppConfig extends Config
     public function __construct(public readonly string  $rootDir,
                                 public readonly Site    $site,
                                 public readonly string  $sourceDir,
-                                private readonly string $dataDir,
+                                public readonly string  $dataDir,
                                 private readonly string $collectionsDir,
                                 public readonly string  $templatesDir,
                                 private readonly string $outputDir,

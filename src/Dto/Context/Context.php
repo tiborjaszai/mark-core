@@ -14,6 +14,9 @@ class Context
     private ?string $env = null;
 
     #[Exclude]
+    private array $data = [];
+
+    #[Exclude]
     private array $collections = [];
 
     public function __construct(public readonly MarkConfig $markConfig,
@@ -21,9 +24,22 @@ class Context
     {
     }
 
+    # region getters / setters
+
     public function getEnv(): ?string
     {
         return $this->env;
+    }
+    
+    public function getData(string $key): ?array
+    {
+        return $this->data[$key] ?? null;
+    }
+
+    public function addData(string $key, array $data): Context
+    {
+        $this->data[$key] = $data;
+        return $this;
     }
 
     /**
@@ -65,4 +81,6 @@ class Context
 
         return $this;
     }
+
+    # endregion getters / setters
 }

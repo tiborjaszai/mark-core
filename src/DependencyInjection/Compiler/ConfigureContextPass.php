@@ -13,6 +13,8 @@ use JTG\Mark\Repository\FileRepository;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Finder\SplFileInfo;
+use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Yaml;
 
 class ConfigureContextPass implements CompilerPassInterface
 {
@@ -59,8 +61,26 @@ class ConfigureContextPass implements CompilerPassInterface
                     break;
 
                 default:
-                    // unmanaged files...
+                    $this->configureContextDataProp(context: $context, file: $fileModel);
             }
+        }
+    }
+
+    protected function configureContextDataProp(Context $context, File $file): void
+    {
+        if ($file->getRelativePath() !== $context->appConfig->dataDir ||
+            false === in_array($file->getExtension(), $context->markConfig->yamlExtensions, true)) {
+            return;
+        }
+
+        try {
+            $data = Yaml::parseFile(filename: $file->getAbsolutePath()) ?? [];
+
+            if (false === empty($data)) {
+                $context->addData(key: $file->getFilenameWithoutExtension(), data: $data);
+            }
+        } catch (ParseException $exception) {
+            // ...
         }
     }
 }
